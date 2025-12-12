@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This analysis examines weather sensor data from Chicago beaches along Lake Michigan, covering 195,672 hourly measurements from April 2015 to December 2025 across three weather stations. The project follows a complete 9-phase data science workflow to build predictive models for air temperature. Key findings include strong seasonal temperature patterns, significant daily cycles, and successful prediction models. The XGBoost model emerged as the best performer, with a test R² of 0.7684 and RMSE of 4.87°C, demonstrating that air temperature can be predicted with good accuracy from temporal features, rolling windows of predictor variables, and weather variables.
+This analysis examines weather sensor data from Chicago beaches along Lake Michigan, covering 195,672 hourly measurements from April 2015 to December 2025 across three weather stations. The project follows a complete 9-phase data science workflow to build predictive models for air temperature. Key findings include strong seasonal temperature patterns, significant daily cycles, and successful prediction models. The XGBoost model emerged as the best performer, with a test R² of 0.7684 and RMSE of 4.87°C, demonstrating that air temperature can be predicted with Interval Rain-Total Rain ratio and other weather variables
 
 ## Phase-by-Phase Findings
 
@@ -15,7 +15,7 @@ Initial exploration revealed a dataset of **196,321 records** with 18 columns in
 - Approximately 75,951 missing values in Wet Bulb Temperature 
 - Missing values in Rain Intensity, Total Rain, Precipitation Type, and Heading (same 75951 records)
 
-- Some outliers in SOLAR RADIATION
+- Some outliers in Air Temperature, Wet Bulb Temperature, Humidity, Rain Intensity, Interval Rain, Total Rain, Precipitation Type, Wind Direction, Wind Speed, Maximum Wind Speed, 'arometric Pressure, Solar Radiation, Heading, 'Battery Life
 - Data collected at hourly intervals with some gaps
 
 Initial visualizations showed:
@@ -65,7 +65,7 @@ Feature engineering created derived variables and rolling window statistics to c
 **Derived Features:**
 - `wetbulb_humidity_diff`: Difference between Wet Bulb Temperatur and Humidity
 
-- 'rain_ratio': Ratio for Interval Rain/ Total Rain
+- `rain_ratio`: Ratio for Interval Rain/ Total Rain
 
 **Rolling Window Features:**
 - `interval_rain_rolling_7h`: 7-hour rolling mean of interval rain
@@ -77,11 +77,11 @@ Pattern analysis revealed several important temporal and correlational patterns:
 
 **Temporal Trends:**
 - Clear seasonal patterns: Air temperatures peak in summer months and reach minimum in winter
-- Monthly Air Temperature ranges roughly from −5.04°C in the coldest months to 25.25°C in the warmest months.
+- Monthly Air Temperature ranges roughly from −5.04°C in the coldest months to about 25°C in the warmest months.
 - Strong seasonal variation typical of Chicago's climate
 
 **Correlations:**
-- Air Temp vs Wet Bulb Temparature:0.764 (strong positive correlation)
+- Air Temp vs Wet Bulb Temparature: 0.764 (strong positive correlation)
 - Air Temp vs Total Rain: 0.328 (moderate positive correlation)
 - Wet Bulb Temparature vs Total Rain: 0.444 (moderate positive correlation)
 
@@ -100,8 +100,6 @@ Modeling preparation involved selecting a target variable, performing temporal t
 
 **Feature Preparation:**
 - Features selected (excluding target, non-numeric columns, and features derived from target)
-
-- Excluded features with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.978 correlation)
 - Drop Measurement Timestamp Label since it'sn't useful for the model
 - No data leakage: future data excluded from training set, and features derived from target excluded
 - Total dataset: **196,321 rows** before split
@@ -121,16 +119,16 @@ Two models were trained and evaluated: Linear Regression and XGBoost (as suggest
 
 
 - Best performing model: XGBoost (R² = 0.79), demonstrating the importance of non-linear modeling and gradient boosting methods
-- Linear Regression did a pretty bad job in prediction, which has test R²: 0.46. This indicats that linear relationships alone are insufficient for accurate temperature prediction
-- XGBoost significantly outperforms Linear Regression, with RMSE of 4.67°C compared to 7.44°C
+- Linear Regression did a pretty bad job in prediction, which has test R²: 0.46. This indicats that linear relationships alone only explain 46% of the variance in the dataset.
+- XGBoost significantly outperforms Linear Regression, with RMSE of 4.68°C compared to 7.44°C
 
 
 
 **Feature Importance (XGBoost):**
 Top features by importance:
-1. Wet Bulb Temperature (importance: 69.5%)
-2. "Battery Life" (1.77%)
-3. "wetbulb_humidity_diff" (3.51%)
+1. `Wet Bulb Temperature` (importance: 69.5%)
+2. `Battery Life` (1.77%)
+3. `wetbulb_humidity_diff` (3.51%)
 - Top 3 features account for 90.68% of total importance
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
@@ -142,11 +140,11 @@ The final results demonstrate successful prediction of air temperature with good
 
 
 **Summary of Key Findings:**
-1. **Model Performance:** XGBoost achieves R² = 0.79, indicating that 79% of variance in air temperature can be explained by the features
+1. **Model Performance:** XGBoost achieves R² = 0.79, indicating that 79% of variance in air temperature can be explained by the features.
 2. **Feature Importance:** The wet bulb temperature feature is overwhelmingly the most important predictor (69.5% importance).
 3. **Temporal Patterns:** Strong seasonal patterns are critical for accurate prediction of air temperature.
-4. **Data Quality:** Cleaning process maintained full dataset while improving reliability through imputation
-5. **Data Leakage Avoidance:** By excluding features derived from the target variable and target variable, we achieved realistic and generalizable model performance
+4. **Data Quality:** Cleaning process maintained full dataset while improving reliability through imputation.
+5. **Data Leakage Avoidance:** By excluding features derived from the target variable and target variable, we achieved realistic and generalizable model performance.
 
 
 ## Visualizations
